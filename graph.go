@@ -1,49 +1,114 @@
 package graph
 
 import (
-	"sync"
+	"errors"
 )
 
-type Vertex struct {
-	key       string
-	neighbors []*Vertex
-	sync.RWMutex
+type VertexId uint
+
+type Vertexes []VertexId
+
+type Edge struct {
+	Tail VertexId
+	Head VertexId
+}
+
+type EdgesIterable interface {
+	EdgesIter() <-chan Edge
+}
+
+type VertexesIterable interface {
+	VertexesIter() <-chan Edge
 }
 
 type Graph struct {
-	vertexes []Vertex
-	sync.RWMutex
+	edges      map[VertexId]map[VertexId]bool
+	edgesCount int
 }
 
-func (v *Vertex) GetNeighbors() []*Vertex {
-	if v == nil {
-		return nil
+func (g *Graph) EdgesIter() <-chan Edge {
+	ch := make(chan Edge)
+	go func() {
+		for from, connectedVertexes := range g.edges {
+			for to, _ := range connectedVertexes {
+				if from < to {
+					ch <- Edge{from, to}
+				}
+			}
+		}
+		close(ch)
+	}()
+	return ch
+}
+
+func (g *Graph) VertexesIter() <-chan VertexId {
+	ch := make(chan VertexId)
+	go func() {
+		for vertex, _ := range g.edges {
+			ch <- vertex
+		}
+		close(ch)
+	}()
+	return ch
+}
+
+func (g *Graph) AddVertex(vertex VertexId) error {
+	i, _ := g.edges[vertex]
+	if i != nil {
+		return errors.New("Vertex already exists")
 	}
 
-	v.RLock()
-	neighbors := v.neighbors
-	v.RUnlock()
+	g.edges[vertex] = make(map[VertexId]bool)
 
-	return neighbors
+	return nil
 }
 
-func (v *Vertex) Key() string {
-	if v == nil {
-		return ""
+func (g *Graph) RemoveVertex(vertex VertexId) error {
+	i, _ := g.edges[vertex]
+	if i == nil {
+		return errors.New("Unknown vertex")
 	}
 
-	v.RLock()
-	key := v.key
-	v.RUnlock()
+	g.edges[vertex] = nil
+	for _, connectedVertexes := range g.edges {
+		connectedVertexes[vertex] = false
+	}
 
-	return key
+	return nil
 }
 
-func (g *Graph) Add(v *Vertex) bool {
-	g.Lock()
-	defer g.Unlock()
+func (g *Graph) AddEdge(from, to VertexId) error {
+	i, _ := g.edges[from][to]
+	j, _ := g.edges[to][from]
 
-	g.vertexes = append(g.vertexes, *v)
+	if i == true || j == true {
+		return errors.New("Edge already defined")
+	}
 
-	return true
+	g.edges[from][to] = true
+	g.edges[to][from] = true
+
+	g.edgesCount++
+
+	return nil
+}
+
+func (g *Graph) RemoveEdge(from, to VertexId) error {
+	i, _ := g.edges[from][to]
+	j, _ := g.edges[to][from]
+
+	if i == false || j == false {
+		return errors.New("Edge doesn't exist")
+	}
+
+	g.edges[from][to] = false
+	g.edges[to][from] = false
+
+	g.edgesCount--
+
+	return nil
+}
+
+func (g *Graph) EdgesCount() int {
+	return g.edgesCount
 }
