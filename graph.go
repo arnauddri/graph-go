@@ -98,6 +98,10 @@ func (g *Graph) RemoveVertex(vertex VertexId) error {
 }
 
 func (g *Graph) AddEdge(from, to VertexId) error {
+	if from == to {
+		return errors.New("Cannot add self loop")
+	}
+
 	i, _ := g.edges[from][to]
 	j, _ := g.edges[to][from]
 
