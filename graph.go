@@ -1,8 +1,6 @@
 package graph
 
-import (
-	"errors"
-)
+import "errors"
 
 type VertexId uint
 
@@ -18,12 +16,20 @@ type EdgesIterable interface {
 }
 
 type VertexesIterable interface {
-	VertexesIter() <-chan Edge
+	VertexesIter() <-chan VertexId
 }
 
 type Graph struct {
 	edges      map[VertexId]map[VertexId]bool
 	edgesCount int
+}
+
+func NewGraph() *Graph {
+	g := new(Graph)
+	g.edges = make(map[VertexId]map[VertexId]bool)
+	g.edgesCount = 0
+
+	return g
 }
 
 func (g *Graph) EdgesIter() <-chan Edge {
@@ -50,6 +56,18 @@ func (g *Graph) VertexesIter() <-chan VertexId {
 		close(ch)
 	}()
 	return ch
+}
+
+func (g *Graph) CheckVertex(vertex VertexId) bool {
+	_, exists := g.edges[vertex]
+
+	return exists
+}
+
+func (g *Graph) touchVertex(vertex VertexId) {
+	if _, ok := g.edges[vertex]; !ok {
+		g.edges[vertex] = make(map[VertexId]bool)
+	}
 }
 
 func (g *Graph) AddVertex(vertex VertexId) error {
@@ -85,6 +103,9 @@ func (g *Graph) AddEdge(from, to VertexId) error {
 		return errors.New("Edge already defined")
 	}
 
+	g.touchVertex(from)
+	g.touchVertex(to)
+
 	g.edges[from][to] = true
 	g.edges[to][from] = true
 
@@ -109,6 +130,46 @@ func (g *Graph) RemoveEdge(from, to VertexId) error {
 	return nil
 }
 
+func (g *Graph) Order() int {
+	return len(g.edges)
+}
+
 func (g *Graph) EdgesCount() int {
 	return g.edgesCount
+}
+
+func (g *Graph) GetNeighbours(vertex VertexId) VertexesIterable {
+	iterator := func() <-chan VertexId {
+		ch := make(chan VertexId)
+		go func() {
+			if connected, ok := g.edges[vertex]; ok {
+				for VertexId, _ := range connected {
+					ch <- VertexId
+				}
+			}
+			close(ch)
+		}()
+		return ch
+	}
+
+	return VertexesIterable(&_vertexIterableHelper{iterFunc: iterator})
+}
+
+func (g *Graph) isEdge(from, to VertexId) (exist bool) {
+	connected, ok := g.edges[from]
+
+	if !ok {
+		panic("Edges doesn't exit")
+	}
+
+	_, exist = connected[to]
+	return
+}
+
+type _vertexIterableHelper struct {
+	iterFunc func() <-chan VertexId
+}
+
+func (helper *_vertexIterableHelper) VertexesIter() <-chan VertexId {
+	return helper.iterFunc()
 }
