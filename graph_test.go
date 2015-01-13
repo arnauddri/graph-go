@@ -65,4 +65,7 @@ func TestGraph(t *testing.T) {
 		fmt.Println(countVertices, g.edges)
 		t.Error()
 	}
+
+	bfs(g, VertexId(1))
+	bfs(g, VertexId(2))
 }
