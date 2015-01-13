@@ -1,6 +1,8 @@
 package graph
 
-import "errors"
+import (
+	"errors"
+)
 
 type VertexId uint
 
@@ -82,14 +84,14 @@ func (g *Graph) AddVertex(vertex VertexId) error {
 }
 
 func (g *Graph) RemoveVertex(vertex VertexId) error {
-	i, _ := g.edges[vertex]
-	if i == nil {
+	if !g.isVertex(vertex) {
 		return errors.New("Unknown vertex")
 	}
 
-	g.edges[vertex] = nil
+	delete(g.edges, vertex)
+
 	for _, connectedVertexes := range g.edges {
-		connectedVertexes[vertex] = false
+		delete(connectedVertexes, vertex)
 	}
 
 	return nil
@@ -155,14 +157,20 @@ func (g *Graph) GetNeighbours(vertex VertexId) VertexesIterable {
 	return VertexesIterable(&_vertexIterableHelper{iterFunc: iterator})
 }
 
+func (g *Graph) isVertex(vertex VertexId) (exist bool) {
+	_, exist = g.edges[vertex]
+
+	return
+}
+
 func (g *Graph) isEdge(from, to VertexId) (exist bool) {
 	connected, ok := g.edges[from]
 
 	if !ok {
-		panic("Edges doesn't exit")
+		panic("Vertex doesn't exit")
 	}
 
-	_, exist = connected[to]
+	exist, _ = connected[to]
 	return
 }
 
