@@ -36,7 +36,7 @@ func TestGraph(t *testing.T) {
 
 	g.RemoveEdge(0, 8)
 
-	if g.isEdge(VertexId(0), VertexId(8)) {
+	if g.isEdge(VertexId(0), VertexId(8)) || g.edgesCount != 9 {
 		fmt.Println(g.isEdge(VertexId(0), VertexId(8)))
 		t.Error()
 	}
