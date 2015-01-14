@@ -6,7 +6,7 @@ import (
 
 type VertexId uint
 
-type Vertexes []VertexId
+type Vertices []VertexId
 
 type Edge struct {
 	Tail VertexId
@@ -17,8 +17,8 @@ type EdgesIterable interface {
 	EdgesIter() <-chan Edge
 }
 
-type VertexesIterable interface {
-	VertexesIter() <-chan VertexId
+type VerticesIterable interface {
+	VerticesIter() <-chan VertexId
 }
 
 type Graph struct {
@@ -37,8 +37,8 @@ func NewGraph() *Graph {
 func (g *Graph) EdgesIter() <-chan Edge {
 	ch := make(chan Edge)
 	go func() {
-		for from, connectedVertexes := range g.edges {
-			for to, _ := range connectedVertexes {
+		for from, connectedVertices := range g.edges {
+			for to, _ := range connectedVertices {
 				if from < to {
 					ch <- Edge{from, to}
 				}
@@ -49,7 +49,7 @@ func (g *Graph) EdgesIter() <-chan Edge {
 	return ch
 }
 
-func (g *Graph) VertexesIter() <-chan VertexId {
+func (g *Graph) VerticesIter() <-chan VertexId {
 	ch := make(chan VertexId)
 	go func() {
 		for vertex, _ := range g.edges {
@@ -90,8 +90,8 @@ func (g *Graph) RemoveVertex(vertex VertexId) error {
 
 	delete(g.edges, vertex)
 
-	for _, connectedVertexes := range g.edges {
-		delete(connectedVertexes, vertex)
+	for _, connectedVertices := range g.edges {
+		delete(connectedVertices, vertex)
 	}
 
 	return nil
@@ -144,7 +144,7 @@ func (g *Graph) EdgesCount() int {
 	return g.edgesCount
 }
 
-func (g *Graph) GetNeighbours(vertex VertexId) VertexesIterable {
+func (g *Graph) GetNeighbours(vertex VertexId) VerticesIterable {
 	iterator := func() <-chan VertexId {
 		ch := make(chan VertexId)
 		go func() {
@@ -158,7 +158,7 @@ func (g *Graph) GetNeighbours(vertex VertexId) VertexesIterable {
 		return ch
 	}
 
-	return VertexesIterable(&_vertexIterableHelper{iterFunc: iterator})
+	return VerticesIterable(&_vertexIterableHelper{iterFunc: iterator})
 }
 
 func (g *Graph) isVertex(vertex VertexId) (exist bool) {
@@ -182,6 +182,6 @@ type _vertexIterableHelper struct {
 	iterFunc func() <-chan VertexId
 }
 
-func (helper *_vertexIterableHelper) VertexesIter() <-chan VertexId {
+func (helper *_vertexIterableHelper) VerticesIter() <-chan VertexId {
 	return helper.iterFunc()
 }

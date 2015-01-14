@@ -13,7 +13,7 @@ func bfs(g *Graph, start VertexId) {
 		next = []VertexId{}
 		for _, vertex := range queue {
 			visited[vertex] = true
-			neighbours := g.GetNeighbours(vertex).VertexesIter()
+			neighbours := g.GetNeighbours(vertex).VerticesIter()
 
 			for neighbour := range neighbours {
 

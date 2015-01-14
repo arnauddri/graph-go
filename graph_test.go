@@ -42,26 +42,26 @@ func TestGraph(t *testing.T) {
 	}
 
 	c := g.EdgesIter()
-	opened := true
 
 	countEdge := 0
 	for _ = range c {
 		countEdge++
 	}
 
-	if g.EdgesCount() != countEdge && !opened {
+	if g.EdgesCount() != countEdge {
 		fmt.Println(countEdge, g.edges)
 		t.Error()
 	}
 
-	d := g.VertexesIter()
+	d := g.VerticesIter()
+	verticesCount := g.Order()
 	countVertices := 0
 
 	for _ = range d {
 		countVertices++
 	}
 
-	if countVertices != len(g.edges) {
+	if countVertices != verticesCount {
 		fmt.Println(countVertices, g.edges)
 		t.Error()
 	}
