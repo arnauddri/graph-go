@@ -1,0 +1,16 @@
+language: go
+
+go:
+  - 1.3
+  - tip
+
+script:
+ - go build -x -v ./...
+ - go test -x -v ./...
+
+notifications:
+  email:
+    recipients:
+      - arnaud.drizard@gmail.com
+    on_success: change
+    on_failure: always
