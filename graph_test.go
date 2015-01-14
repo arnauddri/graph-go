@@ -115,8 +115,28 @@ func TestBfs(t *testing.T) {
 		h.AddEdge(VertexId(i), VertexId(i+1))
 	}
 
-	bfsShortestPath(h, VertexId(1))
 	bfs(h, VertexId(2))
+}
+
+func TestBfsShortestPath(t *testing.T) {
+	h := NewGraph()
+
+	for i := 0; i < 10; i++ {
+		v := VertexId(i)
+		h.AddVertex(v)
+	}
+
+	for i := 0; i < 9; i++ {
+		h.AddEdge(VertexId(i), VertexId(i+1))
+	}
+
+	distance := bfsShortestPath(h, VertexId(0))
+
+	for i := 0; i < len(distance); i++ {
+		if distance[VertexId(i)] != i {
+			t.Error()
+		}
+	}
 }
 
 func TestDfs(t *testing.T) {

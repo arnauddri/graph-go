@@ -1,13 +1,11 @@
 package graph
 
-import (
-	"fmt"
-)
+import ()
 
-func bfsShortestPath(g *Graph, start VertexId) {
+func bfsShortestPath(g *Graph, start VertexId) (dist map[VertexId]int) {
 	queue := []VertexId{start}
 	visited := make(map[VertexId]bool)
-	dist := make(map[VertexId]int)
+	dist = make(map[VertexId]int)
 	var next []VertexId
 
 	for len(queue) > 0 {
@@ -27,6 +25,5 @@ func bfsShortestPath(g *Graph, start VertexId) {
 		}
 		queue = next
 	}
-	fmt.Println(g)
-	fmt.Println(dist)
+	return
 }
