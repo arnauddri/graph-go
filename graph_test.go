@@ -118,3 +118,18 @@ func TestBfs(t *testing.T) {
 	bfsShortestPath(h, VertexId(1))
 	bfs(h, VertexId(2))
 }
+
+func TestDfs(t *testing.T) {
+	h := NewGraph()
+
+	for i := 0; i < 10; i++ {
+		v := VertexId(i)
+		h.AddVertex(v)
+	}
+
+	for i := 0; i < 9; i++ {
+		h.AddEdge(VertexId(i), VertexId(i+1))
+	}
+
+	dfs(h, VertexId(2))
+}
