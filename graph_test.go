@@ -136,6 +136,10 @@ func TestBfsShortestPath(t *testing.T) {
 		if distance[VertexId(i)] != i {
 			t.Error()
 		}
+
+		if bfsDist(h, VertexId(0), VertexId(i)) != i {
+			t.Error()
+		}
 	}
 }
 

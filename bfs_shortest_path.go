@@ -27,3 +27,7 @@ func bfsShortestPath(g *Graph, start VertexId) (dist map[VertexId]int) {
 	}
 	return
 }
+
+func bfsDist(g *Graph, from VertexId, to VertexId) int {
+	return bfsShortestPath(g, from)[to]
+}
