@@ -65,7 +65,20 @@ func TestGraph(t *testing.T) {
 		fmt.Println(countVertices, g.edges)
 		t.Error()
 	}
+}
 
-	bfs(g, VertexId(1))
-	bfs(g, VertexId(2))
+func TestBfs(t *testing.T) {
+	h := NewGraph()
+
+	for i := 0; i < 10; i++ {
+		v := VertexId(i)
+		h.AddVertex(v)
+	}
+
+	for i := 0; i < 9; i++ {
+		h.AddEdge(VertexId(i), VertexId(i+1))
+	}
+
+	bfsShortestPath(h, VertexId(1))
+	bfs(h, VertexId(2))
 }
