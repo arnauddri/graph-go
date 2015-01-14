@@ -27,9 +27,15 @@ func TestGraph(t *testing.T) {
 		t.Error()
 	}
 
-	// AddVertex should fail for already existing vertex
-	err := g.AddVertex(0)
+	// AddEdge should fail for already existing Edge
+	err := g.AddEdge(0, 2)
+	if err == nil {
+		fmt.Println(g)
+		t.Error()
+	}
 
+	// AddVertex should fail for already existing vertex
+	err = g.AddVertex(0)
 	if err == nil {
 		fmt.Println(g)
 		t.Error()
@@ -89,6 +95,12 @@ func TestGraph(t *testing.T) {
 		fmt.Println(countVertices, g.edges)
 		t.Error()
 	}
+
+	g.touchVertex(9)
+	if _, ok := g.edges[9]; !ok {
+		t.Error()
+	}
+
 }
 
 func TestBfs(t *testing.T) {
