@@ -1,10 +1,8 @@
 package graph
 
-import (
-	"fmt"
-)
+import ()
 
-func bfs(g *Graph, start VertexId) {
+func bfs(g *Graph, start VertexId) map[VertexId]bool {
 	queue := []VertexId{start}
 	visited := make(map[VertexId]bool)
 	var next []VertexId
@@ -25,5 +23,5 @@ func bfs(g *Graph, start VertexId) {
 		}
 		queue = next
 	}
-	fmt.Println(visited)
+	return visited
 }

@@ -115,7 +115,13 @@ func TestBfs(t *testing.T) {
 		h.AddEdge(VertexId(i), VertexId(i+1))
 	}
 
-	bfs(h, VertexId(2))
+	bfsMap := bfs(h, VertexId(2))
+
+	for i := 0; i < len(bfsMap); i++ {
+		if _, ok := bfsMap[VertexId(i)]; !ok {
+			t.Error()
+		}
+	}
 }
 
 func TestBfsShortestPath(t *testing.T) {
