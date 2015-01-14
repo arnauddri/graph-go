@@ -161,5 +161,11 @@ func TestDfs(t *testing.T) {
 		h.AddEdge(VertexId(i), VertexId(i+1))
 	}
 
-	dfs(h, VertexId(2))
+	dfsMap := dfs(h, VertexId(2))
+
+	for i := 0; i < len(dfsMap); i++ {
+		if _, ok := dfsMap[VertexId(i)]; !ok {
+			t.Error()
+		}
+	}
 }

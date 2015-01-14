@@ -1,10 +1,8 @@
 package graph
 
-import (
-	"fmt"
-)
+import ()
 
-func dfs(g *Graph, v VertexId) {
+func dfs(g *Graph, v VertexId) map[VertexId]bool {
 	stack := []VertexId{v}
 	visited := make(map[VertexId]bool)
 
@@ -21,5 +19,5 @@ func dfs(g *Graph, v VertexId) {
 			}
 		}
 	}
-	fmt.Println(visited)
+	return visited
 }
