@@ -22,7 +22,15 @@ func TestGraph(t *testing.T) {
 		g.AddEdge(VertexId(i), VertexId(i%2))
 	}
 
-	if g.isEdge(0, 8) == false || g.isEdge(0, 9) == true {
+	if g.isEdge(0, 8) == false || g.isEdge(0, 9) == true || g.CheckVertex(2) != true {
+		fmt.Println(g)
+		t.Error()
+	}
+
+	// AddVertex should fail for already existing vertex
+	err := g.AddVertex(0)
+
+	if err == nil {
 		fmt.Println(g)
 		t.Error()
 	}
@@ -34,10 +42,26 @@ func TestGraph(t *testing.T) {
 		t.Error()
 	}
 
+	// RemoveVertex should fail for unknown vertex
+	err = g.RemoveVertex(VertexId(9))
+
+	if err == nil {
+		fmt.Println(g.edges[9] == nil)
+		t.Error()
+	}
+
 	g.RemoveEdge(0, 8)
 
 	if g.isEdge(VertexId(0), VertexId(8)) || g.edgesCount != 7 {
 		fmt.Println(g.isEdge(VertexId(0), VertexId(8)), g.edgesCount)
+		t.Error()
+	}
+
+	// RemoveEdge should fail for unknown egde
+	err = g.RemoveEdge(0, 8)
+
+	if err == nil {
+		fmt.Println(g)
 		t.Error()
 	}
 
